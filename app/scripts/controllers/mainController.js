@@ -270,7 +270,7 @@ angular.module('filters', []).
       if (isNaN(txt)) return txt;
       var b = new BigNumber(txt);
       var w = web3.fromWei(b, "ether");
-      return w.toFixed(6) + " ETH";
+      return w.toFixed(6) + " ETR";
     };
   }).
   filter('sizeFormat', function () {
