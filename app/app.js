@@ -3,10 +3,10 @@
 // TODO: Put go into a config.js
 // But how to include a file from local?
 
-var GETH_HOSTNAME	= "192.168.1.48";	// put your IP address!
+var GETH_HOSTNAME	= "rpc-alpha.etherus.org";	// put your IP address!
 var APP_HOSTNAME 	= "See package.json --> scripts --> start: Change 'localhost'!!!";
 
-var GETH_RPCPORT  	= 8545; 		// for geth --rpcport GETH_RPCPORT
+var GETH_RPCPORT  	= 443; 		// for geth --rpcport GETH_RPCPORT
 var APP_PORT 		= "See package.json --> scripts --> start: Perhaps change '8000'";
 
 // this is creating the corrected geth command
