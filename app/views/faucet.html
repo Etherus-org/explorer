@@ -1,0 +1,18 @@
+<div class="container" style="padding-top: 10px;">
+
+    <h1><i class="fa fa-server"></i> Etherus Faucet
+        <small>Allows you to feel your funds with some ETR</small>
+    </h1>
+    <div id="faucet" class="blockdiv">
+    <form class="navbar-form"  ng-controller="mainCtrl" ng-submit="processFaucet()" name="faucet_form" role="faucet">
+        <div class="input-group">
+            <input type="text" placeholder="Etherus Address to send ETR to" name="requestType" required ng-model="ethRequest"  class="form-control searchimain">
+            <div class="input-group-btn">
+                <button class="btn btn-primary btn-bluem" type="submit"><i class="fa fa-funnel-dollar"></i> Send</button>
+            </div>
+        </div>
+    </form>
+      <hr>
+    </div>
+
+</div>
