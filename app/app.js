@@ -3,7 +3,7 @@
 // TODO: Put go into a config.js
 // But how to include a file from local?
 
-var GETH_URL		= "https://rpc-alpha.etherus.org";
+var GETH_URL		= "https://rpc.etherus.org";
 var GETH_HOSTNAME	= /:\/\/([^\/:]+)/.exec(GETH_URL)[1];	// put your IP address!
 var GETH_RPCPORT  	= 443; 	// for geth --rpcport GETH_RPCPORT
 
