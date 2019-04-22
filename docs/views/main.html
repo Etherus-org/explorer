@@ -27,11 +27,11 @@
                 <strong>Block #</strong>
             </td>
             <td>Block Hash</td>
-            <td>Difficulty</td>
+            <!--<td>Difficulty</td>-->
             <td>Proposer</td>
-            <td>
+            <!--<td>
                 Size
-            </td>
+            </td>-->
             <td>
                 Date
             </td>
@@ -50,16 +50,16 @@
                     </a>
                 </td>
                 <td><a href="/#/block/{{ block.hash }}"><span class="btn btn-sm btn-success">{{ block.hash | truncate : 12 }}</span></a></td>
-                <td style="vertical-align:middle;">{{ block.difficulty | diffFormat }}</td>
+                <!--<td style="vertical-align:middle;">{{ block.difficulty | diffFormat }}</td>-->
                 <td style="vertical-align:middle;"><a href="/#/address/{{ block.miner }}">{{ block.miner }}</a></td>
-                <td style="vertical-align:middle;">
+                <!--<td style="vertical-align:middle;">
                     {{ block.size | sizeFormat }}
-                </td>
+                </td>-->
                 <td style="vertical-align:middle;">
                     {{ block.timestamp * 1000 | date:'medium' }}
                 </td>
                 <td style="vertical-align:middle;">
-                    {{ block.transactions.length }}
+                    {{ block.txcount }}
                 </td>
                 <td style="vertical-align:middle;">
                     {{ block.gasUsed | gasFormat }}
