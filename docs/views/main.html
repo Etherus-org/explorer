@@ -29,9 +29,9 @@
             <td>Block Hash</td>
             <!--<td>Difficulty</td>-->
             <td>Proposer</td>
-            <!--<td>
-                Size
-            </td>-->
+            <td>
+                Round
+            </td>
             <td>
                 Date
             </td>
@@ -52,9 +52,9 @@
                 <td><a href="/#/block/{{ block.hash }}"><span class="btn btn-sm btn-success">{{ block.hash | truncate : 12 }}</span></a></td>
                 <!--<td style="vertical-align:middle;">{{ block.difficulty | diffFormat }}</td>-->
                 <td style="vertical-align:middle;"><a href="/#/address/{{ block.miner }}">{{ block.miner }}</a></td>
-                <!--<td style="vertical-align:middle;">
-                    {{ block.size | sizeFormat }}
-                </td>-->
+                <td style="vertical-align:middle;">
+                    {{ block.round }}
+                </td>
                 <td style="vertical-align:middle;">
                     {{ block.timestamp * 1000 | date:'medium' }}
                 </td>
