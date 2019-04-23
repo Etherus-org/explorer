@@ -9,6 +9,7 @@ angular.module('ethExplorer')
     .controller('mainCtrl', function ($rootScope, $scope, $location) {
 
         console.log($rootScope.$$phase);
+        initScope();
 
         if($rootScope.$$phase !== '$digest' || mainCtrlTimerId)
             return;
@@ -43,58 +44,6 @@ angular.module('ethExplorer')
                     }, 3000);
                 }
             });
-
-            $scope.processRequest = function () {
-                var requestStr = $scope.ethRequest;
-
-
-                if (requestStr !== undefined) {
-
-                    // maybe we can create a service to do the reg ex test, so we can use it in every controller ?
-
-                    var regexpTx = /[0-9a-zA-Z]{64}?/;
-                    //var regexpAddr =  /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/; // TODO ADDR REGEX or use isAddress(hexString) API ?
-                    var regexpAddr = /^(0x)?[0-9a-f]{40}$/; //New ETH Regular Expression for Addresses
-                    var regexpBlock = /[0-9]{1,7}?/;
-
-                    var result = regexpTx.test(requestStr);
-                    if (result === true) {
-                        goToTxInfos(requestStr)
-                    }
-                    else {
-                        result = regexpAddr.test(requestStr.toLowerCase());
-                        if (result === true) {
-                            goToAddrInfos(requestStr.toLowerCase())
-                        }
-                        else {
-                            result = regexpBlock.test(requestStr);
-                            if (result === true) {
-                                goToBlockInfos(requestStr)
-                            }
-                            else {
-                                console.log("nope");
-                                return null;
-                            }
-                        }
-                    }
-                }
-                else {
-                    return null;
-                }
-            };
-
-
-            function goToBlockInfos(requestStr) {
-                $location.path('/block/' + requestStr);
-            }
-
-            function goToAddrInfos(requestStr) {
-                $location.path('/address/' + requestStr.toLowerCase());
-            }
-
-            function goToTxInfos(requestStr) {
-                $location.path('/tx/' + requestStr);
-            }
 
             function updateStats() {
                 $scope.blockNum = web3.eth.blockNumber; // now that was easy
@@ -179,21 +128,7 @@ angular.module('ethExplorer')
 
                     }
                 }
-                // Block Explorer Info
-                $scope.isConnected = web3.isConnected();
-                //$scope.peerCount = web3.net.peerCount;
-                $scope.versionApi = web3.version.api;
-                $scope.versionClient = web3.version.client;
-                //$scope.versionNetwork = web3.version.network;
-                $scope.versionCurrency = web3.version.ethereum; // TODO: change that to currencyname?
 
-                // ready for the future:
-                try {
-                    $scope.versionWhisper = web3.version.whisper;
-                }
-                catch (err) {
-                    $scope.versionWhisper = err.message;
-                }
             }
 
 
@@ -246,6 +181,75 @@ angular.module('ethExplorer')
             mainCtrlTimerId = null;
 
         }, 300);
+
+        function goToBlockInfos(requestStr) {
+            $location.path('/block/' + requestStr);
+        }
+
+        function goToAddrInfos(requestStr) {
+            $location.path('/address/' + requestStr.toLowerCase());
+        }
+
+        function goToTxInfos(requestStr) {
+            $location.path('/tx/' + requestStr);
+        }
+
+        function initScope(){
+            $scope.processRequest = function () {
+                var requestStr = $scope.ethRequest;
+
+
+                if (requestStr !== undefined) {
+
+                    // maybe we can create a service to do the reg ex test, so we can use it in every controller ?
+
+                    var regexpTx = /[0-9a-zA-Z]{64}?/;
+                    //var regexpAddr =  /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/; // TODO ADDR REGEX or use isAddress(hexString) API ?
+                    var regexpAddr = /^(0x)?[0-9a-f]{40}$/; //New ETH Regular Expression for Addresses
+                    var regexpBlock = /[0-9]{1,7}?/;
+
+                    var result = regexpTx.test(requestStr);
+                    if (result === true) {
+                        goToTxInfos(requestStr)
+                    }
+                    else {
+                        result = regexpAddr.test(requestStr.toLowerCase());
+                        if (result === true) {
+                            goToAddrInfos(requestStr.toLowerCase())
+                        }
+                        else {
+                            result = regexpBlock.test(requestStr);
+                            if (result === true) {
+                                goToBlockInfos(requestStr)
+                            }
+                            else {
+                                console.log("nope");
+                                return null;
+                            }
+                        }
+                    }
+                }
+                else {
+                    return null;
+                }
+            };
+
+            // Block Explorer Info
+            $scope.isConnected = web3.isConnected();
+            //$scope.peerCount = web3.net.peerCount;
+            $scope.versionApi = web3.version.api;
+            $scope.versionClient = web3.version.client;
+            //$scope.versionNetwork = web3.version.network;
+            $scope.versionCurrency = web3.version.ethereum; // TODO: change that to currencyname?
+
+            // ready for the future:
+            try {
+                $scope.versionWhisper = web3.version.whisper;
+            }
+            catch (err) {
+                $scope.versionWhisper = err.message;
+            }
+        }
 
     });
 
