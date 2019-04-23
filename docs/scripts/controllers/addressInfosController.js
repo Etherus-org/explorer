@@ -23,6 +23,7 @@ angular.module('ethExplorer')
             	getAddressBalance()
                     .then(function(result){
                     	$scope.balance = web3.fromWei(result).toNumber();
+                        getETHUSD();
                     });
             	getAddressTransactionCount()
 	                .then(function(result){
@@ -38,7 +39,6 @@ angular.module('ethExplorer')
                 	console.log(result)
                 	$scope.transactions=result;
                 	});
-              getETHUSD();
             } else {
                 $location.path("/");
             }
@@ -53,7 +53,8 @@ angular.module('ethExplorer')
             }
 
             function getETHUSD() {
-                $scope.balanceusd = "$" + 4*$scope.balance;
+
+                $scope.balanceusd = "$" + (4*$scope.balance).toFixed(2);
 
 /*              $.getJSON("https://api.coinmarketcap.com/v1/ticker/ethereum/", function(json) {
                 var price = Number(json[0].price_usd);
