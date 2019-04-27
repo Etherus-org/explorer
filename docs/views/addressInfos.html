@@ -49,7 +49,7 @@
             <tbody>
             <tr ng-repeat="tx in transactions track by $index-async" class="animated fadeIn">
 
-                <td style="vertical-align:middle;"><a href="/#/tx/{{ tx.hash }}">{{ tx.hash || "" | truncate : 45 }}</a></td>
+                <td style="vertical-align:middle;"><a href="/#/tx/0x{{ tx.hash }}">{{ tx.hash || "" | truncate : 10 }}</a></td>
                 <td style="vertical-align:middle;">
                     {{ tx.timestamp * 1000 | date:'medium' }}
                 </td>
@@ -58,8 +58,8 @@
                         {{ tx.blockNumber || "" }}
                     </a>
                 </td>
-                <td style="vertical-align:middle;"><a href="/#/address/{{ tx.from }}">{{ tx.from || "" | truncate : 20 }}</a></td>
-                <td style="vertical-align:middle;"><a href="/#/address/{{ tx.to }}">{{ tx.to || "" | truncate : 20 }}</a></td>
+                <td style="vertical-align:middle;"><a href="/#/address/0x{{ tx.from }}">{{ tx.from || "" | truncate : 20 }}</a></td>
+                <td style="vertical-align:middle;"><a href="/#/address/0x{{ tx.to }}">{{ tx.to || "" | truncate : 20 }}</a></td>
                 <td style="vertical-align:middle;">
                     {{ tx.gas | gasFormat }}
                 </td>

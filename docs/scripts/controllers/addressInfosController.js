@@ -9,7 +9,6 @@
 // by AltSheets
 //    September 2015
 //
-const ETHERUS_API = 'https://api.etherus.org/vl/';
 
 angular.module('ethExplorer')
     .controller('addressInfosCtrl', function ($rootScope, $scope, $location, $routeParams,$q) {
@@ -86,10 +85,11 @@ angular.module('ethExplorer')
             }
 
             function getTransactions(){
+                const ETHERUS_API = 'https://api.etherus.org/vl/';
                 var deferred = $q.defer();
-//                fetch(ETHERUS_API + 'transactions?addr=' + $scope.addressId.replace(/^0x/, '')).then(r => r.json()).then(j => {
-//                    deferred.resolve(j.result.txs);
-//                });
+                fetch(ETHERUS_API + 'transactions?addr=' + $scope.addressId.replace(/^0x/, '')).then(r => r.json()).then(j => {
+                    deferred.resolve(j.result.txs);
+                });
                 return deferred.promise;
             }
         };
