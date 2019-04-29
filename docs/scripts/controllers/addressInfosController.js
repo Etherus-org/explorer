@@ -22,7 +22,7 @@ angular.module('ethExplorer')
             if($scope.addressId!==undefined) {
             	getAddressBalance()
                     .then(function(result){
-                    	$scope.balance = web3.fromWei(result).toNumber();
+                    	$scope.balance = +web3.utils.fromWei(result);
                         getETHUSD();
                     });
             	getAddressTransactionCount()
@@ -45,10 +45,9 @@ angular.module('ethExplorer')
 
             function getAddressBalance(){
                 var deferred = $q.defer();
-                web3.eth.getBalance($scope.addressId, function(error, result) {
-                    if(!error){deferred.resolve(result);}
-                    else{deferred.reject(error);}
-                });
+                web3.eth.getBalance($scope.addressId)
+                    .then(result => deferred.resolve(result))
+                    .catch(error => deferred.resolve(error));
                 return deferred.promise;
             }
 
@@ -66,22 +65,11 @@ angular.module('ethExplorer')
             }
 
             function getAddressTransactionCount(){
-            	// var success=$.getScript('../../config.js');
-                var deferred = $q.defer();
-                web3.eth.getTransactionCount($scope.addressId, function(error, result) {
-                    if(!error){deferred.resolve(result);}
-                    else{deferred.reject(error);}
-                });
-                return deferred.promise;
+                return web3.eth.getTransactionCount($scope.addressId);
             }
 
             function getCode(){
-                var deferred = $q.defer();
-                web3.eth.getCode($scope.addressId, function(error, result) {
-                    if(!error){deferred.resolve(result);}
-                    else{deferred.reject(error);}
-                });
-                return deferred.promise;
+                return web3.eth.getCode($scope.addressId);
             }
 
             function getTransactions(){

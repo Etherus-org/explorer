@@ -3,7 +3,7 @@
 // TODO: Put go into a config.js
 // But how to include a file from local?
 
-var GETH_URL		= "https://rpc.etherus.org";
+var GETH_URL		= "wss://rpc.etherus.org";
 var GETH_HOSTNAME	= /:\/\/([^\/:]+)/.exec(GETH_URL)[1];	// put your IP address!
 var GETH_RPCPORT  	= 443; 	// for geth --rpcport GETH_RPCPORT
 
@@ -96,11 +96,9 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap','filters','ngSanitize'])
             //$locationProvider.html5Mode(true);
     }])
     .run(function($rootScope) {
-        var Web3 = require('web3');
-
         // begin AltSheets changes
         var web3 = new Web3();
-	web3.setProvider(new web3.providers.HttpProvider(GETH_URL));
+	    web3.setProvider(GETH_URL);
 	// end AltSheets changes
 
         $rootScope.web3=web3;
@@ -114,7 +112,7 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap','filters','ngSanitize'])
             while(new Date().getTime() < now + sleepDuration){ /* do nothing */ }
         }
         var connected = false;
-        if(!web3.isConnected()) {
+        if(!web3.eth.net.isListening()) {
             $('#connectwarning').modal({keyboard:false,backdrop:'static'})
             $('#connectwarning').modal('show')
         }

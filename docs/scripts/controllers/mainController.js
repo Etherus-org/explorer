@@ -1,7 +1,4 @@
-//var cryptoSocket = require('crypto-socket');
-var BigNumber = require('bignumber.js');
 const ETHERUS_API = 'https://api.etherus.org/vl/';
-let lastLatest = null;
 let mainCtrlTimerId = null;
 let filter = null;
 
@@ -31,11 +28,10 @@ angular.module('ethExplorer')
             }
 
             if(filter)
-                filter.stopWatching();
+                filter.unsubscribe();
 
             console.log("Setting filter");
-            filter = web3.eth.filter("latest");
-            filter.watch(function (error, result) {
+            filter = web3.eth.subscribe("newBlockHeaders", function (error, result) {
                 console.log("Filtered " + result);
                 if (!error) {
                     setTimeout(async () => {
@@ -45,36 +41,36 @@ angular.module('ethExplorer')
                 }
             });
 
-            function updateStats() {
-                $scope.blockNum = web3.eth.blockNumber; // now that was easy
+            async function updateStats() {
+                $scope.blockNum = await web3.eth.getBlockNumber(); // now that was easy
 
                 if ($scope.blockNum !== undefined) {
 
                     // TODO: put the 2 web3.eth.getBlock into the async function below
                     //       easiest to first do with fastInfosCtrl
-                    var blockNewest = web3.eth.getBlock($scope.blockNum);
+                    var blockNewest = await web3.eth.getBlock($scope.blockNum);
 
                     if (blockNewest !== undefined) {
 
                         // difficulty
                         $scope.difficulty = blockNewest.difficulty;
-                        $scope.difficultyToExponential = blockNewest.difficulty.toExponential(3);
+                        $scope.difficultyToExponential = blockNewest.difficulty;
 
                         $scope.totalDifficulty = blockNewest.totalDifficulty;
-                        $scope.totalDifficultyToExponential = blockNewest.totalDifficulty.toExponential(3);
+                        $scope.totalDifficultyToExponential = blockNewest.totalDifficulty;
 
-                        $scope.totalDifficultyDividedByDifficulty = $scope.totalDifficulty.dividedBy($scope.difficulty);
-                        $scope.totalDifficultyDividedByDifficulty_formatted = $scope.totalDifficultyDividedByDifficulty.toFormat(1);
+                        $scope.totalDifficultyDividedByDifficulty = $scope.totalDifficulty/$scope.difficulty;
+                        $scope.totalDifficultyDividedByDifficulty_formatted = $scope.totalDifficultyDividedByDifficulty.toFixed(1);
 
-                        $scope.AltsheetsCoefficient = $scope.totalDifficultyDividedByDifficulty.dividedBy($scope.blockNum);
-                        $scope.AltsheetsCoefficient_formatted = $scope.AltsheetsCoefficient.toFormat(4);
+                        $scope.AltsheetsCoefficient = $scope.totalDifficultyDividedByDifficulty/$scope.blockNum;
+                        $scope.AltsheetsCoefficient_formatted = $scope.AltsheetsCoefficient.toFixed(4);
 
                         // large numbers still printed nicely:
-                        $scope.difficulty_formatted = $scope.difficulty.toFormat(0);
-                        $scope.totalDifficulty_formatted = $scope.totalDifficulty.toFormat(0);
+                        $scope.difficulty_formatted = $scope.difficulty;
+                        $scope.totalDifficulty_formatted = $scope.totalDifficulty;
 
                         // Gas Limit
-                        $scope.gasLimit = new BigNumber(blockNewest.gasLimit).toFormat(0) + " m/s";
+                        $scope.gasLimit = blockNewest.gasLimit.toFixed(0) + " m/s";
 
                         // Time
                         var newDate = new Date();
@@ -87,7 +83,7 @@ angular.module('ethExplorer')
                         // Average Block Times:
                         // TODO: make fully async, put below into 'fastInfosCtrl'
 
-                        var blockBefore = web3.eth.getBlock($scope.blockNum - 1);
+                        var blockBefore = await web3.eth.getBlock($scope.blockNum - 1);
                         if (blockBefore !== undefined) {
                             $scope.blocktime = blockNewest.timestamp - blockBefore.timestamp;
                         }
@@ -159,16 +155,16 @@ angular.module('ethExplorer')
                           }); */
             }
 
-            function updateTXList() {
-                var currentTXnumber = web3.eth.blockNumber;
+            async function updateTXList() {
+                var currentTXnumber = await web3.eth.getBlockNumber();
                 $scope.txNumber = currentTXnumber;
                 $scope.recenttransactions = [];
                 return fetch(ETHERUS_API + 'recent_transactions').then(response => response.json())
                     .then(json => $scope.recenttransactions = json.result);
             }
 
-            function updateBlockList() {
-                var currentBlockNumber = web3.eth.blockNumber;
+            async function updateBlockList() {
+                var currentBlockNumber = await web3.eth.getBlockNumber();
                 $scope.blockNumber = currentBlockNumber;
                 $scope.blocks = [];
                 return fetch(ETHERUS_API + 'recent_blocks').then(response => response.json())
@@ -194,7 +190,7 @@ angular.module('ethExplorer')
             $location.path('/tx/' + requestStr);
         }
 
-        function initScope(){
+        async function initScope(){
             $scope.processRequest = function () {
                 var requestStr = $scope.ethRequest;
 
@@ -235,16 +231,16 @@ angular.module('ethExplorer')
             };
 
             // Block Explorer Info
-            $scope.isConnected = web3.isConnected();
+            $scope.isConnected = await web3.eth.net.isListening();
             //$scope.peerCount = web3.net.peerCount;
-            $scope.versionApi = web3.version.api;
-            $scope.versionClient = web3.version.client;
+            $scope.versionApi = web3.version;
+            $scope.versionClient = web3.eth.getNodeInfo();
             //$scope.versionNetwork = web3.version.network;
-            $scope.versionCurrency = web3.version.ethereum; // TODO: change that to currencyname?
+            $scope.versionCurrency = "Etherus"; // TODO: change that to currencyname?
 
             // ready for the future:
             try {
-                $scope.versionWhisper = web3.version.whisper;
+                $scope.versionWhisper = await web3.shh.getVersion();
             }
             catch (err) {
                 $scope.versionWhisper = err.message;
@@ -294,15 +290,15 @@ angular.module('filters', []).filter('truncate', function () {
 }).filter('gasFormat', function () {
     return function (txt) {
         if (isNaN(txt)) return txt;
-        var b = new BigNumber(txt);
-        return b.toFormat(0) + " m/s";
+        var b = txt;
+        return b.toFixed(0) + " m/s";
     };
 }).filter('BigNum', function () {
     return function (txt) {
         if (isNaN(txt)) return txt;
-        var b = new BigNumber(txt);
-        var w = web3.fromWei(b, "ether");
-        return w.toFixed(6) + " ETR";
+        var b = txt;
+        var w = web3.utils.fromWei(b.toString(), "ether");
+        return (+w).toFixed(6) + " ETR";
     };
 }).filter('sizeFormat', function () {
     return function (size) {

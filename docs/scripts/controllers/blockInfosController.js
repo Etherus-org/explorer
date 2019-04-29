@@ -1,4 +1,3 @@
-var BigNumber = require('bignumber.js');
 angular.module('ethExplorer')
     .controller('blockInfosCtrl', function ($rootScope, $scope, $location, $routeParams,$q) {
 
@@ -12,8 +11,8 @@ angular.module('ethExplorer')
             if($scope.blockId!==undefined) {
 
                 getBlockInfos()
-                    .then(function(result){
-                        var number = web3.eth.blockNumber;
+                    .then(async function(result){
+                        var number = await web3.eth.getBlockNumber();
 
                     $scope.result = result;
 
@@ -41,8 +40,8 @@ angular.module('ethExplorer')
                     $scope.nonce = result.nonce;
                     var diff = ("" + result.difficulty).replace(/['"]+/g, '') / 1000000000000;
                     $scope.difficulty = diff.toFixed(3) + " T";
-                    $scope.gasLimit = new BigNumber(result.gasLimit).toFormat(0) + " m/s"; // that's a string
-                    $scope.gasUsed = new BigNumber(result.gasUsed).toFormat(0) + " m/s";
+                    $scope.gasLimit = result.gasLimit.toFixed(0) + " m/s"; // that's a string
+                    $scope.gasUsed = result.gasUsed.toFixed(0) + " m/s";
                     $scope.nonce = result.nonce;
                     $scope.number = result.number;
                     $scope.parentHash = result.parentHash;
@@ -67,7 +66,7 @@ angular.module('ethExplorer')
                         }
 
                         if ($scope.blockNumber !== undefined){
-                            var info = web3.eth.getBlock($scope.blockNumber);
+                            var info = await web3.eth.getBlock($scope.blockNumber);
                             if (info !== undefined){
                                 var newDate = new Date();
                                 newDate.setTime(info.timestamp * 1000);
@@ -82,17 +81,7 @@ angular.module('ethExplorer')
 
 
             function getBlockInfos(){
-                var deferred = $q.defer();
-
-                web3.eth.getBlock($scope.blockId,function(error, result) {
-                    if(!error){
-                        deferred.resolve(result);
-                    }
-                    else{
-                        deferred.reject(error);
-                    }
-                });
-                return deferred.promise;
+                return web3.eth.getBlock($scope.blockId);
 
             }
 
@@ -103,13 +92,13 @@ angular.module('ethExplorer')
         // parse transactions
         $scope.transactions = []
 
-        web3.eth.getBlockTransactionCount($scope.blockId, function(error, result){
+        web3.eth.getBlockTransactionCount($scope.blockId).then((result, error) => {
             var txCount = result;
             $scope.numberOfTransactions = txCount;
             for (var blockIdx = 0; blockIdx < txCount; blockIdx++) {
-                web3.eth.getTransactionFromBlock($scope.blockId, blockIdx, function(error, result) {
+                web3.eth.getTransactionFromBlock($scope.blockId, blockIdx).then((result, error) => {
 	                // console.log("Result: ", result);
-                    web3.eth.getTransactionReceipt(result.hash, function(error, receipt) {
+                    web3.eth.getTransactionReceipt(result.hash).then((receipt, error) => {
                         var transaction = {
                             id: receipt.transactionHash,
                             hash: receipt.transactionHash,
@@ -117,7 +106,7 @@ angular.module('ethExplorer')
                             to: receipt.to,
                             gas: receipt.gasUsed,
                             input: result.input.slice(2),
-                            value: web3.fromWei(result.value, "ether"),
+                            value: web3.utils.fromWei(result.value, "ether"),
                             contractAddress: receipt.contractAddress
                         }
                         $scope.$apply(
