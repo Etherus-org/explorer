@@ -72,14 +72,29 @@ angular.module('ethExplorer')
                 return web3.eth.getCode($scope.addressId);
             }
 
+            $scope.currentTxPage = 1;
+            $scope.totalTxPages = 1;
+            $scope.txsPerPage = 10;
+            $scope.totalTxs = 0;
+
             function getTransactions(){
                 const ETHERUS_API = 'https://api.etherus.org/vl/';
                 var deferred = $q.defer();
-                fetch(ETHERUS_API + 'transactions?addr=' + $scope.addressId.replace(/^0x/, '')).then(r => r.json()).then(j => {
-                    deferred.resolve(j.result.txs);
+                fetch(ETHERUS_API + 'transactions?addr=' + $scope.addressId.replace(/^0x/, '')
+                    + '&start=' + (($scope.currentTxPage-1)*$scope.txsPerPage) + '&num=' + $scope.txsPerPage)
+                    .then(r => r.json()).then(j => {
+                        $scope.totalTxPages = j.result.total / j.result.txsPerPage;
+                        $scope.totalTxs = j.result.total;
+                        deferred.resolve(j.result.txs);
                 });
                 return deferred.promise;
             }
+
+            $scope.pageChanged = async function() {
+                $scope.transactions = await getTransactions();
+                $scope.$apply();
+            }
+
         };
         $scope.init();
 

@@ -69,5 +69,14 @@
             </tr>
             </tbody>
         </table>
+        <pagination
+                ng-change="pageChanged()"
+                total-items="totalTxs"
+                items-per-page="txsPerPage"
+                ng-model="currentTxPage"
+                max-size="totalTxPages"
+                class="pagination-sm"
+                boundary-links="true">
+        </pagination>
     </div>
 </div>
